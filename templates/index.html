@@ -1,13 +1,130 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-URL Shortner
-</body>
-</html>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+<form id="ulr-form">
+        <div class="form__group" id="form-div">
+  <input type="text" class="form__input" id="name" placeholder="URL" required/>
+            <div id="notification"></div>
+  <label for="name" class="form__label">URL</label>
+
+</div>
+</form>
+
+
+
+<style>
+    *,
+    *::after,
+    *::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+  font-size: 62,5%;
+}
+
+body {
+  height: 100vh;
+	width: 100%;
+  background: #0f2027; /* fallback for old browsers */
+  background: linear-gradient(to right,#2c5364, #203a43, #0f2027);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+}
+
+.form__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  margin-top: 0.7rem;
+  display: block;
+  transition: all 0.3s;
+  transform: translateY(0rem);
+}
+
+.form__input {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  font-size: 1.2rem;
+	margin: 0 auto;
+  padding: 1.5rem 2rem;
+  border-radius: 0.2rem;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  width: 100%;
+  display: block;
+  border-bottom: 0.3rem solid transparent;
+  transition: all 0.3s;
+}
+
+.form__input:placeholder-shown + .form__label {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transform: translateY(-4rem);
+  transform: translateY(-4rem);
+}
+
+</style>
+
+<script>
+    function get_token(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = cookies[i].trim();
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+            }
+
+        var csrftoken = get_token('csrftoken');
+
+
+    let form = document.getElementById('ulr-form')
+    form.addEventListener("submit", function (e){
+        e.preventDefault()
+        let fetch_url = 'api/new-url/'
+        let url = document.getElementById('name').value
+
+        fetch(fetch_url, {
+            method: "POST",
+                headers:{
+                    'Content-type':'application/json',
+                    'X-CSRFToken':csrftoken,
+                },
+                body: JSON.stringify({'url': url})
+        })
+
+        .then((resp) => resp.json())
+        .then(function (data){
+            console.log('Data', data)
+
+            if(data['error']){
+                form.reset()
+                notwrapper = document.getElementById('notification')
+                notwrapper.innerHTML = '<label for="name">Enter a valid url pattern</label>'
+
+            }
+
+            else{
+                notwrapper.innerHTML = ''
+                let formWrapper = document.getElementById('form-div')
+            formWrapper.innerHTML += `<input type="text"  value="${data['short_url']}" class="form__input" id="short"
+                placeholder="URL" readonly/>
+                <label for="short">Your short URL</label>`
+            }
+
+
+
+        })
+    })
+        
+
+</script>

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 
 from .models import Link
 from .serializers import LinkSerializer
@@ -13,13 +14,12 @@ def index(request):
 
 @api_view(['POST'])
 def generate_url(request):
-    serializer = LinkSerializer(request.data)
-
+    serializer = LinkSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
 
-    return Response(serializer.errors)
+    return Response({"error": 'Enter valid url'})
 
 
 def redirect_url(request, code):
