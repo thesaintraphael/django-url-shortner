@@ -1,4 +1,4 @@
-Bit. ly  clone <-> Url shortner
+Bit. ly  clone <-> Url shorter
 
 
 Run locally:
